@@ -1,0 +1,21 @@
+library(dplyr)
+install.packages("party")
+library(party)
+library(rpart)
+library(rpart.plot)
+install.packages("ROCR")
+library(ROCR)
+set.seed(3000)
+fall <- read.csv("Fall_Pull.csv")
+summary(fall)
+split <- sample.split(fall, SplitRatio = 0.7)
+train <- subset(fall, split==TRUE)
+test <- subset(fall, split==FALSE)
+tree <- rpart(Grad ~ Race + FRAM + ACT + GPA + Absences + Tardies + 
+                IllColl + X2.YEAR.4.YEAR + PUBLIC.PRIVATE + 
+                COLLEGE_SEQUENCE, data = train, minbucket=10)
+
+rpart.plot(tree)
+tree.train <- predict(tree, test, type = "class")
+table <- table(fall$Grad, tree.train)
+roc <-  
